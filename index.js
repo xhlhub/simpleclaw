@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { createInterface } from "readline";
 import chalk from "chalk";
-import { runAgent } from "./src/core/agent.js";
+import { createSession } from "./src/core/agent.js";
 import { assistant } from "./src/agents/assistant.js";
 
 function printBanner() {
@@ -33,8 +33,10 @@ async function main() {
       rl.question(chalk.bold.green("\n你: "), resolve);
     });
 
+  const session = createSession(assistant);
+
   console.log(chalk.cyan(`已启动 [${assistant.name}]，随便问点什么吧！`));
-  console.log(chalk.dim('输入 "exit" 退出\n'));
+  console.log(chalk.dim('输入 "exit" 退出 | "reset" 重置对话\n'));
 
   while (true) {
     const input = await prompt();
@@ -46,10 +48,16 @@ async function main() {
       rl.close();
       break;
     }
+    if (trimmed === "reset") {
+      session.messages.length = 0;
+      session.messages.push({ role: "system", content: assistant.systemPrompt });
+      console.log(chalk.yellow("\n🔄 对话已重置\n"));
+      continue;
+    }
 
     try {
       console.log(chalk.dim("\n⏳ Agent 正在思考...\n"));
-      const reply = await runAgent(assistant, trimmed);
+      const reply = await session.run(trimmed);
       console.log(chalk.bold("\n🤖 Agent:"));
       console.log(reply);
     } catch (err) {

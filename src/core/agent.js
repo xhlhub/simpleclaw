@@ -22,50 +22,55 @@ export function defineAgent({ name, description, systemPrompt, tools = [] }) {
 }
 
 /**
- * 运行 Agent：接收用户消息，通过 tool-calling 循环得到最终回复。
+ * 创建一个带对话记忆的 Agent 会话。
+ * 返回的 session 对象维护完整的消息历史，支持多轮上下文。
  */
-export async function runAgent(agent, userMessage) {
-  const messages = [
-    { role: "system", content: agent.systemPrompt },
-    { role: "user", content: userMessage },
-  ];
+export function createSession(agent) {
+  const messages = [{ role: "system", content: agent.systemPrompt }];
 
-  for (let i = 0; i < MAX_ITERATIONS; i++) {
-    const choice = await chat(messages, agent.toolDefinitions);
+  async function run(userMessage) {
+    messages.push({ role: "user", content: userMessage });
 
-    if (choice.finish_reason === "stop" || !choice.message.tool_calls?.length) {
-      return choice.message.content;
-    }
+    for (let i = 0; i < MAX_ITERATIONS; i++) {
+      const choice = await chat(messages, agent.toolDefinitions);
 
-    messages.push(choice.message);
-
-    for (const toolCall of choice.message.tool_calls) {
-      const fnName = toolCall.function.name;
-      const args = JSON.parse(toolCall.function.arguments);
-
-      console.log(chalk.dim(`  🔧 调用工具: ${fnName}(${JSON.stringify(args)})`));
-
-      const handler = agent.toolHandlers[fnName];
-      if (!handler) {
-        throw new Error(`未知工具: ${fnName}`);
+      if (choice.finish_reason === "stop" || !choice.message.tool_calls?.length) {
+        messages.push(choice.message);
+        return choice.message.content;
       }
 
-      let result;
-      try {
-        result = await handler(args);
-      } catch (err) {
-        result = { error: err.message };
+      messages.push(choice.message);
+
+      for (const toolCall of choice.message.tool_calls) {
+        const fnName = toolCall.function.name;
+        const args = JSON.parse(toolCall.function.arguments);
+
+        console.log(chalk.dim(`  🔧 调用工具: ${fnName}(${JSON.stringify(args)})`));
+
+        const handler = agent.toolHandlers[fnName];
+        if (!handler) {
+          throw new Error(`未知工具: ${fnName}`);
+        }
+
+        let result;
+        try {
+          result = await handler(args);
+        } catch (err) {
+          result = { error: err.message };
+        }
+
+        console.log(chalk.dim(`  ✅ 工具返回: ${JSON.stringify(result).slice(0, 200)}`));
+
+        messages.push({
+          role: "tool",
+          tool_call_id: toolCall.id,
+          content: JSON.stringify(result),
+        });
       }
-
-      console.log(chalk.dim(`  ✅ 工具返回: ${JSON.stringify(result).slice(0, 200)}`));
-
-      messages.push({
-        role: "tool",
-        tool_call_id: toolCall.id,
-        content: JSON.stringify(result),
-      });
     }
+
+    return "（已达到最大迭代次数，Agent 停止运行）";
   }
 
-  return "（已达到最大迭代次数，Agent 停止运行）";
+  return { run, messages };
 }
