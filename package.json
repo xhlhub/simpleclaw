@@ -4,9 +4,7 @@
   "description": "Node.js AI Agents 示例 — 天气助手 & 穿搭建议",
   "type": "module",
   "scripts": {
-    "start": "node index.js",
-    "weather": "node index.js weather",
-    "outfit": "node index.js outfit"
+    "start": "node index.js"
   },
   "dependencies": {
     "openai": "^4.85.0",

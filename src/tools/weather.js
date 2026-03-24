@@ -35,7 +35,7 @@ function describeWeatherCode(code) {
   return WEATHER_CODE_MAP[code] || `未知(${code})`;
 }
 
-async function getWeeklyForecast({ latitude, longitude }) {
+async function getForecast({ latitude, longitude, forecast_days = 7 }) {
   const params = new URLSearchParams({
     latitude,
     longitude,
@@ -50,7 +50,7 @@ async function getWeeklyForecast({ latitude, longitude }) {
       "uv_index_max",
     ].join(","),
     timezone: "auto",
-    forecast_days: "7",
+    forecast_days: String(forecast_days),
   });
 
   const res = await fetch(`${FORECAST_API}?${params}`);
@@ -84,18 +84,24 @@ export const weatherTool = {
   definition: {
     type: "function",
     function: {
-      name: "get_weekly_forecast",
+      name: "get_forecast",
       description:
-        "获取指定经纬度未来 7 天的天气预报，包含气温、体感温度、降水量、风速、UV 指数等。需要先用 geocode 工具获取经纬度。",
+        "获取指定经纬度未来 N 天的天气预报，包含气温、体感温度、降水量、风速、UV 指数等。需要先用 geocode 工具获取经纬度。根据用户问题选择合适的天数，例如问明天就传 2（今天+明天），问本周就传 7。",
       parameters: {
         type: "object",
         properties: {
           latitude: { type: "number", description: "纬度" },
           longitude: { type: "number", description: "经度" },
+          forecast_days: {
+            type: "integer",
+            description: "预报天数（1-16），根据用户需求选择。问明天传 2，问后天传 3，问一周传 7，默认 7",
+            minimum: 1,
+            maximum: 16,
+          },
         },
         required: ["latitude", "longitude"],
       },
     },
   },
-  handler: getWeeklyForecast,
+  handler: getForecast,
 };

@@ -2,29 +2,26 @@ import "dotenv/config";
 import { createInterface } from "readline";
 import chalk from "chalk";
 import { runAgent } from "./src/core/agent.js";
-import { weatherAgent } from "./src/agents/weather.js";
-import { outfitAgent } from "./src/agents/outfit.js";
-
-const agents = {
-  weather: weatherAgent,
-  outfit: outfitAgent,
-};
+import { assistant } from "./src/agents/assistant.js";
 
 function printBanner() {
   console.log(chalk.bold.cyan("\n╔══════════════════════════════════════╗"));
-  console.log(chalk.bold.cyan("║     🤖 Node.js Agents Demo          ║"));
+  console.log(chalk.bold.cyan("║     🤖 Node.js Agent Demo           ║"));
   console.log(chalk.bold.cyan("╚══════════════════════════════════════╝\n"));
+  console.log(chalk.dim("试试问我：「今天天气怎么样」「北京天气」「明天去上海出差穿什么」「东京和首尔哪个更冷」\n"));
 }
 
-function printAgentList() {
-  console.log(chalk.yellow("可用的 Agent：\n"));
-  for (const [key, agent] of Object.entries(agents)) {
-    console.log(`  ${chalk.green(key.padEnd(10))} ${agent.description}`);
+async function main() {
+  printBanner();
+
+  if (!process.env.OPENAI_API_KEY) {
+    console.log(chalk.red("⚠️  未检测到 OPENAI_API_KEY"));
+    console.log(chalk.yellow("请复制 .env.example 为 .env 并填入你的 API Key："));
+    console.log(chalk.dim("  cp .env.example .env"));
+    console.log(chalk.dim("  # 然后编辑 .env 填入 API Key\n"));
+    process.exit(1);
   }
-  console.log(`\n${chalk.dim("用法: node index.js <agent名> 或直接运行进入交互模式")}\n`);
-}
 
-async function interactiveMode(agent) {
   const rl = createInterface({
     input: process.stdin,
     output: process.stdout,
@@ -35,8 +32,8 @@ async function interactiveMode(agent) {
       rl.question(chalk.bold.green("\n你: "), resolve);
     });
 
-  console.log(chalk.cyan(`\n已进入 [${agent.name}] 模式`));
-  console.log(chalk.dim('输入城市名开始查询，输入 "exit" 退出\n'));
+  console.log(chalk.cyan(`已启动 [${assistant.name}]，随便问点什么吧！`));
+  console.log(chalk.dim('输入 "exit" 退出\n'));
 
   while (true) {
     const input = await prompt();
@@ -51,7 +48,7 @@ async function interactiveMode(agent) {
 
     try {
       console.log(chalk.dim("\n⏳ Agent 正在思考...\n"));
-      const reply = await runAgent(agent, trimmed);
+      const reply = await runAgent(assistant, trimmed);
       console.log(chalk.bold("\n🤖 Agent:"));
       console.log(reply);
     } catch (err) {
@@ -61,49 +58,6 @@ async function interactiveMode(agent) {
       }
     }
   }
-}
-
-async function selectAgent() {
-  const rl = createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
-
-  printAgentList();
-
-  return new Promise((resolve) => {
-    rl.question(chalk.bold("请选择 Agent (weather/outfit): "), (answer) => {
-      rl.close();
-      resolve(answer.trim().toLowerCase());
-    });
-  });
-}
-
-async function main() {
-  printBanner();
-
-  if (!process.env.OPENAI_API_KEY) {
-    console.log(chalk.red("⚠️  未检测到 OPENAI_API_KEY"));
-    console.log(chalk.yellow("请复制 .env.example 为 .env 并填入你的 API Key："));
-    console.log(chalk.dim("  cp .env.example .env"));
-    console.log(chalk.dim("  # 然后编辑 .env 填入 API Key\n"));
-    process.exit(1);
-  }
-
-  let agentKey = process.argv[2];
-
-  if (!agentKey || !agents[agentKey]) {
-    agentKey = await selectAgent();
-  }
-
-  const agent = agents[agentKey];
-  if (!agent) {
-    console.log(chalk.red(`未知的 Agent: ${agentKey}`));
-    printAgentList();
-    process.exit(1);
-  }
-
-  await interactiveMode(agent);
 }
 
 main().catch(console.error);
