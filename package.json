@@ -1,0 +1,16 @@
+{
+  "name": "node-agents-demo",
+  "version": "1.0.0",
+  "description": "Node.js AI Agents 示例 — 天气助手 & 穿搭建议",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "weather": "node index.js weather",
+    "outfit": "node index.js outfit"
+  },
+  "dependencies": {
+    "openai": "^4.85.0",
+    "dotenv": "^16.4.0",
+    "chalk": "^5.3.0"
+  }
+}
