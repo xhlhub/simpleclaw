@@ -8,16 +8,12 @@ import {
   geocodingTool,
   weatherTool,
   locationTool,
-  listFilesTool,
-  batchRenameTool,
 } from "./tools/index.js";
 
 const ALL_TOOLS = [
   geocodingTool,
   weatherTool,
   locationTool,
-  listFilesTool,
-  batchRenameTool,
 ];
 
 const toolHandlers = Object.fromEntries(

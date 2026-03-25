@@ -4,6 +4,11 @@
       "command": "node",
       "args": ["src/mcp-server.js"],
       "description": "内置工具（天气、地理编码、位置）"
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/Users/forrest"],
+      "description": "文件系统操作（读写、重命名、搜索等）"
     }
   }
 }
