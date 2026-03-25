@@ -10,7 +10,8 @@ function printBanner() {
   console.log(chalk.bold.cyan("║     🤖 Node.js Agent (MCP)          ║"));
   console.log(chalk.bold.cyan("╚══════════════════════════════════════╝\n"));
   console.log(chalk.dim("试试问我：「今天天气怎么样」「北京天气」「明天去上海出差穿什么」「东京和首尔哪个更冷」"));
-  console.log(chalk.dim("         「帮我把 /Users/xxx/photos 里的文件加上日期前缀」「把文件名中的空格替换成下划线」\n"));
+  console.log(chalk.dim("         「帮我把 /Users/xxx/photos 里的文件加上日期前缀」「把文件名中的空格替换成下划线」"));
+  console.log(chalk.dim("         「打开 https://example.com 截个图」「帮我在网页上搜索一下 xxx」\n"));
 }
 
 async function main() {

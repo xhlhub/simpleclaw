@@ -9,6 +9,11 @@
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-filesystem", "/Users/forrest"],
       "description": "文件系统操作（读写、重命名、搜索等）"
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@latest"],
+      "description": "浏览器自动化（导航、点击、截图、表单填写等）"
     }
   }
 }
