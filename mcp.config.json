@@ -14,6 +14,11 @@
       "command": "npx",
       "args": ["-y", "@playwright/mcp@latest"],
       "description": "浏览器自动化（导航、点击、截图、表单填写等）"
+    },
+    "shell": {
+      "command": "npx",
+      "args": ["-y", "mcp-shell"],
+      "description": "Shell 命令执行（支持 ssh、scp、rsync 等远程操作）"
     }
   }
 }
