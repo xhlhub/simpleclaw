@@ -1,7 +1,7 @@
 import { chat } from "./llm.js";
 import chalk from "chalk";
 
-const MAX_ITERATIONS = 15;
+const MAX_ITERATIONS = 30;
 
 /**
  * 创建一个 Agent 配置（MCP 版本）。

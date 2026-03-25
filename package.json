@@ -8,10 +8,13 @@
     "mcp-server": "node src/mcp-server.js"
   },
   "dependencies": {
-    "openai": "^4.85.0",
-    "dotenv": "^16.4.0",
-    "chalk": "^5.3.0",
     "@modelcontextprotocol/sdk": "^1.27.0",
+    "chalk": "^5.3.0",
+    "dotenv": "^16.4.0",
+    "openai": "^4.85.0",
     "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2"
   }
 }

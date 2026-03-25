@@ -1,13 +1,12 @@
 {
   "mcpServers": {
-    "built-in-tools": {
-      "command": "node",
-      "args": ["src/mcp-server.js"],
-      "description": "内置工具（天气、地理编码、位置）"
-    },
     "filesystem": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/Users/forrest"],
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/Users/mac"
+      ],
       "description": "文件系统操作（读写、重命名、搜索等）"
     },
     "playwright": {
@@ -19,6 +18,10 @@
       "command": "npx",
       "args": ["-y", "mcp-shell"],
       "description": "Shell 命令执行（支持 ssh、scp、rsync 等远程操作）"
+    },
+    "xiaohongshu MCP": {
+      "command": "/Users/mac/Documents/code/Redbook-Search-Comment-MCP2.0/start.sh",
+      "args": []
     }
   }
 }
