@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "built-in-tools": {
+      "command": "node",
+      "args": ["src/mcp-server.js"],
+      "description": "内置工具（天气、地理编码、位置）"
+    }
+  }
+}

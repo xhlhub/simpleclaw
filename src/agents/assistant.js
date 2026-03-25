@@ -1,11 +1,4 @@
 import { defineAgent } from "../core/agent.js";
-import {
-  geocodingTool,
-  weatherTool,
-  locationTool,
-  listFilesTool,
-  batchRenameTool,
-} from "../tools/index.js";
 
 const systemPrompt = `你是一位全能生活助手，擅长天气分析、穿搭建议和文件管理。
 
@@ -44,5 +37,4 @@ export const assistant = defineAgent({
   name: "生活助手",
   description: "天气查询、穿搭建议、出行参考、文件管理",
   systemPrompt,
-  tools: [locationTool, geocodingTool, weatherTool, listFilesTool, batchRenameTool],
 });

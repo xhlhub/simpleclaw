@@ -4,35 +4,27 @@ import chalk from "chalk";
 const MAX_ITERATIONS = 15;
 
 /**
- * 创建一个 Agent 配置。
- * @param {object} config
- * @param {string} config.name          Agent 名称
- * @param {string} config.description   Agent 描述
- * @param {string} config.systemPrompt  系统提示词
- * @param {Array}  config.tools         工具函数数组 [{ definition, handler }]
+ * 创建一个 Agent 配置（MCP 版本）。
+ * tools 不再直接传入，而是通过 McpClientManager 动态获取。
  */
-export function defineAgent({ name, description, systemPrompt, tools = [] }) {
-  const toolDefinitions = tools.map((t) => t.definition);
-
-  const toolHandlers = Object.fromEntries(
-    tools.map((t) => [t.definition.function.name, t.handler])
-  );
-
-  return { name, description, systemPrompt, toolDefinitions, toolHandlers };
+export function defineAgent({ name, description, systemPrompt }) {
+  return { name, description, systemPrompt };
 }
 
 /**
  * 创建一个带对话记忆的 Agent 会话。
- * 返回的 session 对象维护完整的消息历史，支持多轮上下文。
+ * mcpManager 负责提供工具列表和执行工具调用。
  */
-export function createSession(agent) {
+export function createSession(agent, mcpManager) {
   const messages = [{ role: "system", content: agent.systemPrompt }];
 
   async function run(userMessage) {
     messages.push({ role: "user", content: userMessage });
 
+    const toolDefinitions = mcpManager.getOpenAIToolDefinitions();
+
     for (let i = 0; i < MAX_ITERATIONS; i++) {
-      const choice = await chat(messages, agent.toolDefinitions);
+      const choice = await chat(messages, toolDefinitions);
 
       if (choice.finish_reason === "stop" || !choice.message.tool_calls?.length) {
         messages.push(choice.message);
@@ -47,14 +39,9 @@ export function createSession(agent) {
 
         console.log(chalk.dim(`  🔧 调用工具: ${fnName}(${JSON.stringify(args)})`));
 
-        const handler = agent.toolHandlers[fnName];
-        if (!handler) {
-          throw new Error(`未知工具: ${fnName}`);
-        }
-
         let result;
         try {
-          result = await handler(args);
+          result = await mcpManager.callTool(fnName, args);
         } catch (err) {
           result = { error: err.message };
         }

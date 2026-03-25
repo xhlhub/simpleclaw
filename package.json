@@ -1,14 +1,17 @@
 {
   "name": "node-agents-demo",
-  "version": "1.0.0",
-  "description": "Node.js AI Agents 示例 — 天气助手 & 穿搭建议",
+  "version": "2.0.0",
+  "description": "Node.js AI Agent — MCP 架构，支持内置工具 & 外部 MCP Server",
   "type": "module",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "mcp-server": "node src/mcp-server.js"
   },
   "dependencies": {
     "openai": "^4.85.0",
     "dotenv": "^16.4.0",
-    "chalk": "^5.3.0"
+    "chalk": "^5.3.0",
+    "@modelcontextprotocol/sdk": "^1.27.0",
+    "zod": "^3.25.0"
   }
 }
