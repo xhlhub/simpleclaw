@@ -79,8 +79,7 @@ async function main() {
       break;
     }
     if (trimmed === "reset") {
-      session.messages.length = 0;
-      session.messages.push({ role: "system", content: assistant.systemPrompt });
+      session.reset();
       console.log(chalk.yellow("\n🔄 对话已重置\n"));
       continue;
     }

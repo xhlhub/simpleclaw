@@ -14,9 +14,17 @@ export function defineAgent({ name, description, systemPrompt }) {
 /**
  * 创建一个带对话记忆的 Agent 会话。
  * mcpManager 负责提供工具列表和执行工具调用。
+ * system prompt = agent 自身的通用 prompt + 各 MCP server 的 instructions
  */
 export function createSession(agent, mcpManager) {
-  const messages = [{ role: "system", content: agent.systemPrompt }];
+  const serverInstructions = mcpManager.getServerInstructions();
+  const fullSystemPrompt = agent.systemPrompt + serverInstructions;
+  const messages = [{ role: "system", content: fullSystemPrompt }];
+
+  function reset() {
+    messages.length = 0;
+    messages.push({ role: "system", content: fullSystemPrompt });
+  }
 
   async function run(userMessage) {
     messages.push({ role: "user", content: userMessage });
@@ -59,5 +67,5 @@ export function createSession(agent, mcpManager) {
     return "（已达到最大迭代次数，Agent 停止运行）";
   }
 
-  return { run, messages };
+  return { run, reset, messages };
 }

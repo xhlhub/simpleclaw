@@ -1,7 +1,7 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import { readFile } from "fs/promises";
-import { resolve } from "path";
+import { resolve, dirname } from "path";
 import chalk from "chalk";
 
 /**
@@ -21,6 +21,7 @@ export class McpClientManager {
 
   async connectAll(configPath) {
     const configFile = resolve(configPath || "mcp.config.json");
+    this._configDir = dirname(configFile);
     const config = await this.loadConfig(configFile);
     const serverEntries = Object.entries(config.mcpServers || {});
 
@@ -65,7 +66,19 @@ export class McpClientManager {
       toolNames.push(tool.name);
     }
 
-    this.servers.set(name, { client, transport, tools, config });
+    let instructions = "";
+    if (config.instructions) {
+      try {
+        const instrPath = resolve(this._configDir || ".", config.instructions);
+        instructions = await readFile(instrPath, "utf-8");
+      } catch (err) {
+        console.warn(
+          chalk.yellow(`  ⚠ MCP Server [${name}] 的 instructions 文件加载失败: ${err.message}`)
+        );
+      }
+    }
+
+    this.servers.set(name, { client, transport, tools, config, instructions });
     console.log(
       chalk.dim(`  ✓ MCP Server [${name}] 已连接，提供 ${toolNames.length} 个工具: ${toolNames.join(", ")}`)
     );
@@ -109,6 +122,16 @@ export class McpClientManager {
     } catch {
       return combined;
     }
+  }
+
+  getServerInstructions() {
+    const parts = [];
+    for (const [name, { instructions }] of this.servers) {
+      if (instructions) {
+        parts.push(instructions.trim());
+      }
+    }
+    return parts.length > 0 ? "\n\n工具使用策略：\n" + parts.join("\n\n") : "";
   }
 
   async close() {

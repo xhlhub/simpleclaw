@@ -7,21 +7,25 @@
         "@modelcontextprotocol/server-filesystem",
         "/Users/mac"
       ],
-      "description": "文件系统操作（读写、重命名、搜索等）"
+      "description": "文件系统操作（读写、重命名、搜索等）",
+      "instructions": "instructions/filesystem.md"
     },
     "playwright": {
       "command": "npx",
       "args": ["-y", "@playwright/mcp@latest", "--browser", "chrome"],
-      "description": "浏览器自动化（导航、点击、截图、表单填写等）"
+      "description": "浏览器自动化（导航、点击、截图、表单填写等）",
+      "instructions": "instructions/playwright.md"
     },
     "shell": {
       "command": "npx",
       "args": ["-y", "mcp-shell"],
-      "description": "Shell 命令执行（支持 ssh、scp、rsync 等远程操作）"
+      "description": "Shell 命令执行（支持 ssh、scp、rsync 等远程操作）",
+      "instructions": "instructions/shell.md"
     },
     "xiaohongshu MCP": {
       "command": "/Users/mac/Documents/code/Redbook-Search-Comment-MCP2.0/start.sh",
-      "args": []
+      "args": [],
+      "instructions": "instructions/xiaohongshu.md"
     }
   }
 }
